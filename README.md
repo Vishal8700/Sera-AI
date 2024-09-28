@@ -1,15 +1,18 @@
-# Sera AI ✨- Etherverse Variants
+# ✨Sera AI - Etherverse Variants
 
-## Overview 🔎
+## 🔎 Overview 
 
 **Sera AI** is an intelligent, React-based chatbot application created by **Team Etherverse Variants**. Sera AI integrates Google Authentication for secure access and leverages cutting-edge APIs to facilitate dynamic conversations, information retrieval, and task automation, all within a seamless and user-friendly interface.
 
 ---
-## Video (Youtube)📽️
+## 📽️Video (Youtube)
 [![YouTube Video](https://img.youtube.com/vi/c2p3oX5EKNw/maxresdefault.jpg)](https://youtu.be/c2p3oX5EKNw)
 
+---
+## 📊 Presentation  
 
-###  Key Features 💡
+---
+## 💡 Key Features 
 
 1. **Natural Conversations** 💬🧠:  
    Sera AI uses the **Gemini API** to engage users in natural, coherent conversations on a wide range of topics. It can understand user prompts, maintain context, and offers relevant information or entertainment.
@@ -28,7 +31,7 @@
    Sera AI allows users to create and publish LinkedIn posts. Users can compose posts with titles, content, and hashtags, and Sera AI will handle the post creation process.
 
 ---
-### Tech Stack
+## 💻 Tech Stack
 
 - **Backend**:  
   - ⚡ **FastAPI** : Used for building and managing API endpoints.
