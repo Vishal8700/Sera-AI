@@ -51,9 +51,134 @@
 
 ## 🔧 Setup and Installation
 
-- Navigate to ___ folder and run `npm install`
--
--
+Prerequisites - Make sure you have the following installed:
+
+1. **Node.js and npm**  
+   You can download Node.js from [here](https://nodejs.org/). npm comes preinstalled with Node.js.
+
+2. **Python 3.x**  
+   You can download Python from [here](https://www.python.org/downloads/).
+
+3. **Virtual Environment (Optional but recommended for Python)**  
+   You can use Python’s `venv` or `virtualenv` for project isolation.
+
+---
+
+## 1. React Frontend Setup
+
+### Installation
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the React Application
+
+1. Start the React development server:
+   ```bash
+   npm start
+   ```
+
+2. By default, this will start the React application at `http://localhost:3000`.
+
+---
+
+## 2. Node.js Backend (Express) Setup
+
+### Installation
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Install the necessary dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the Node.js (Express) Backend
+
+1. Start the Node.js server:
+   ```bash
+   node ./server.js
+
+   ```
+
+2. By default, this will start the Express backend at `http://localhost:8000`.
+
+---
+
+## 3. Python API Setup (FastAPI with MongoDB)
+
+### Python Setup
+
+1. Navigate to the Python API directory:
+   ```bash
+   cd api
+   ```
+
+2. It’s recommended to set up a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+
+   - **Windows**:
+     ```bash
+     venv\Scripts\activate
+     ```
+   - **macOS/Linux**:
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. Install the required Python packages from `requirements.txt`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+### Running the FastAPI Application
+
+1. Run the Python API using Uvicorn, specifying a custom port if needed (e.g., `8001`):
+   ```bash
+   uvicorn main:app --reload --port 8001
+   ```
+
+2. The API will be available at `http://localhost:8001`.
+
+### API Documentation
+
+- FastAPI automatically generates interactive API documentation:
+  - **Swagger UI**: `http://localhost:8001/docs`
+  - **ReDoc**: `http://localhost:8001/redoc`
+
+---
+
+## Additional Notes
+
+- **Frontend to Backend Communication**: Make sure the React frontend makes API calls to the correct backend API and Express server URLs, which would typically be `http://localhost:8000` for the Express backend and `http://localhost:8001` for the Python API.
+- **MongoDB**: Ensure MongoDB is properly configured and running for both the Node.js backend and the Python API.
+
+### Common Commands
+
+#### React Frontend
+- Install dependencies: `npm install`
+- Start development server: `npm start`
+  
+#### Node.js Backend (Express)
+- Install dependencies: `npm install`
+- Start Express server: `npm run start`
+
+#### Python API with MongoDB
+- Install dependencies: `pip install -r requirements.txt`
+- Start FastAPI server (with custom port): `uvicorn main:app --reload --port 8001`
 
 ---
 
