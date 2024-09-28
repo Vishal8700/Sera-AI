@@ -10,7 +10,7 @@
 
 ---
 ## 📊 Presentation  
-[Sera AI (2)_compressed.pdf](https://github.com/user-attachments/files/17175463/Sera.AI.2._compressed.pdf)
+[Sera AI PPT.pdf](https://github.com/user-attachments/files/17175463/Sera.AI.2._compressed.pdf)
 
 ---
 ## 💡 Key Features 
