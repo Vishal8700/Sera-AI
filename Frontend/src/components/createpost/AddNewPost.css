@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+.body{
+    font-family: 'poppins';
+}
+.add-new-post {
+    background-color: white;
+    font-family: 'poppins';
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 48rem;
+    margin: 50px auto;
+    padding: 20px 20px 20px 20px;
+    padding-right: 10px;
+  }
+  
+  .post-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #374151;
+  }
+  
+  .input-field {
+    width: 95%;
+    margin-right: 20px;
+    padding-right: 20px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+  }
+  
+  .media-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  
+  .add-media-button:hover {
+    color: #1f2937;
+  }
+  
+  .visual-text {
+    margin-left: auto;
+    color: #6b7280;
+  }
+  
+  .toolbar {
+    display: flex;
+    align-items: center;
+    background-color: #f3f4f6;
+    padding: 0.25rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .toolbar-button {
+    max-width: 95%;
+    padding: 0.25rem;
+    background: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .toolbar-button:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .content-textarea {
+    width: 95%;
+    padding: 0.5rem;
+    min-height: 200px;
+    
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  
+  .emoji-picker-container {
+    margin-top: 0.5rem;
+  }
+  
+  .word-count {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .share-button {
+    margin-top: 1rem;
+    background-color:#fd493d;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .share-button:hover {
+    background-color:#f44336;
+  }

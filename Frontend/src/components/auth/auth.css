@@ -1,0 +1,75 @@
+
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it is above other content */
+  }
+  
+  .auth-container {
+    background: rgb(255, 244, 244);
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.5);
+    animation: fadeIn .3s ease-in-out; /* Animation for fade-in effect */
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .auth-form input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    border: solid 1px #ea5858;
+  }
+  
+  .auth-form button {
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    background-color: #f44336; /* Primary color */
+    color: white;
+  }
+  
+  .auth-form button:hover {
+     background-color: #cf1406; /* Darker shade on hover */
+     transition: background-color .3s ease; /* Smooth transition */
+  }
+  
+  .toggle-button {
+     background-color: transparent; /* No background */
+     color: #f44336; /* Primary color */
+     border: none; 
+     cursor: pointer; 
+     text-align: left; 
+     margin-top:10px; 
+  }
+  
+  .back-button {
+     background-color: transparent; /* No background */
+     border: none; 
+     color: #f44336; /* Primary color */
+     cursor: pointer; 
+     font-size: larger; 
+     margin-bottom:15px; 
+  }
+  
+  .back-button:hover {
+     text-decoration: underline; /* Underline effect on hover */
+  }
+  
+  /* Animation Keyframes */
+  @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+  }

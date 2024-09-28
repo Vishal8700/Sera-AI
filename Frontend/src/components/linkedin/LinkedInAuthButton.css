@@ -1,0 +1,26 @@
+.linkedin-auth-button {
+    background-color: #0077B5; /* LinkedIn blue */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 35px; /* Padding */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text */
+    display: flex; /* Flex for icon alignment */
+    align-items: center; /* Center the icon vertically */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth background color transition */
+  }
+  
+  .linkedin-auth-button:hover {
+    background-color: #005582; /* Darker blue on hover */
+  }
+  
+  .linkedin-auth-button:focus {
+    outline: none; /* Remove default focus outline */
+  }
+  .linkedin-auth-button .fa-linkedin {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 20px; /* Icon size */
+  }
+  
