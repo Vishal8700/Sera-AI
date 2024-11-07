@@ -1,186 +1,119 @@
-# import requests
-# from bs4 import BeautifulSoup
-# from fastapi import FastAPI
-# from pydantic import BaseModel
-# import re
-#
-# app = FastAPI()
-#
-# class NameRequest(BaseModel):
-#     name: str
-#
-# def clean_text(text):
-#     return ' '.join(text.split()).strip()
-#
-# def get_google_search_results(name):
-#     query = f"site:linkedin.com/in/ {name}"
-#     headers = {
-#         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-#     }
-#     search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
-#
-#     response = requests.get(search_url, headers=headers)
-#     if response.status_code != 200:
-#         raise Exception(f"Failed to fetch search results. Status code: {response.status_code}")
-#
-#     return response.text
-#
-# def parse_search_results(html_content):
-#     soup = BeautifulSoup(html_content, 'html.parser')
-#     profiles = []
-#
-#     # Fetch all profile containers
-#     profile_divs = soup.find_all('div', class_='MjjYud')
-#
-#     for div in profile_divs:
-#         try:
-#             # Extract username and LinkedIn URL
-#             user_info_div = div.find('div', class_='kb0PBd cvP2Ce A9Y9g jGGQ5e')
-#             profile_link_tag = user_info_div.find('a', href=True)
-#             linkedin_url = profile_link_tag['href']
-#             user_name_tag = profile_link_tag.find('h3', class_="LC20lb MBeuO DKV0Md")
-#             user_name = clean_text(user_name_tag.text)
-#
-#             # Extract company and about section
-#             additional_info_div = div.find('div', class_='kb0PBd cvP2Ce A9Y9g')
-#             company_address_span = additional_info_div.find('span', class_='YrbPuc')
-#             #company_address = clean_text(company_address_span.text) if company_address_span else "Address not found"
-#
-#             about_section_span = additional_info_div.find('div', class_='VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb')
-#             about_section = clean_text(about_section_span.text) if about_section_span else "About section not found"
-#
-#             # Store the profile information
-#             profile_info = {
-#                 "name": user_name,
-#                 "linkedin_url": linkedin_url,
-#                 #"company_address": company_address,
-#                 "about_section": about_section
-#             }
-#             profiles.append(profile_info)
-#
-#             # Break once we have 10 unique profiles
-#             if len(profiles) >= 10:
-#                 break
-#         except Exception as e:
-#             # Continue with the next profile in case of any parsing error
-#             print(f"Error parsing profile: {e}")
-#             continue
-#
-#     return profiles
-#
-# @app.post("/scrape_linkedin_profiles")
-# async def scrape_linkedin_profiles(request: NameRequest):
-#     try:
-#         # Step 1: Get Google search results
-#         search_results_html = get_google_search_results(request.name)
-#
-#         # Step 2: Parse the results to extract profile details
-#         profiles = parse_search_results(search_results_html)
-#
-#         if not profiles:
-#             return {"message": "No profiles found"}
-#
-#         return profiles
-#
-#     except Exception as e:
-#         return {"error": str(e)}
-#
-# # To run the FastAPI app:
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8003)
-
 import requests
 from bs4 import BeautifulSoup
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import re
+from typing import List, Optional
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Add CORS middleware to allow requests from your React frontend
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://your-frontend-domain.com"],  # Update with your frontend URL
+    allow_origins=["http://localhost:3000", "https://your-frontend-domain.com"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 class NameRequest(BaseModel):
     name: str
 
+class ProfileResponse(BaseModel):
+    name: str
+    linkedin_url: str
+    about_section: Optional[str] = None
 
-def clean_text(text):
-    return ' '.join(text.split()).strip()
+def clean_text(text: str) -> str:
+    """Clean and normalize text by removing extra whitespace."""
+    return ' '.join(text.split()).strip() if text else ""
 
+def get_google_search_results(name: str) -> str:
+    """Fetch Google search results for LinkedIn profiles."""
+    try:
+        query = f"site:linkedin.com/in/ {name}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        }
+        search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+        response = requests.get(search_url, headers=headers, timeout=10)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        logger.error(f"Error fetching search results for '{name}': {str(e)}")
+        raise HTTPException(status_code=503, detail="Failed to fetch search results")
 
-def get_google_search_results(name):
-    query = f"site:linkedin.com/in/ {name}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+def extract_linkedin_url(href: str) -> Optional[str]:
+    """Extract LinkedIn profile URL from Google search result href."""
+    linkedin_pattern = r'https?://[w\.]*linkedin\.com/in/[a-zA-Z0-9-]+(?:/[a-zA-Z0-9-]+)?'
+    match = re.search(linkedin_pattern, href)
+    return match.group(0) if match else None
 
-    response = requests.get(search_url, headers=headers)
-    if response.status_code != 200:
-        raise Exception(f"Failed to fetch search results. Status code: {response.status_code}")
-
-    return response.text
-
-
-def parse_search_results(html_content):
-    soup = BeautifulSoup(html_content, 'html.parser')
+def parse_search_results(html_content: str) -> List[ProfileResponse]:
+    """Parse Google search results to extract LinkedIn profile information."""
     profiles = []
+    try:
+        soup = BeautifulSoup(html_content, 'html.parser')
+        search_results = soup.find_all('div', {'class': ['g', 'tF2Cxc']})
 
-    profile_divs = soup.find_all('div', class_='MjjYud')
+        for result in search_results:
+            try:
+                link = result.find('a')
+                if not link:
+                    continue
 
-    for div in profile_divs:
-        try:
-            user_info_div = div.find('div', class_='kb0PBd cvP2Ce A9Y9g jGGQ5e')
-            profile_link_tag = user_info_div.find('a', href=True)
-            linkedin_url = profile_link_tag['href']
-            user_name_tag = profile_link_tag.find('h3', class_="LC20lb MBeuO DKV0Md")
-            user_name = clean_text(user_name_tag.text)
+                linkedin_url = extract_linkedin_url(link.get('href'))
+                if not linkedin_url:
+                    continue
 
-            additional_info_div = div.find('div', class_='kb0PBd cvP2Ce A9Y9g')
-            about_section_span = additional_info_div.find('div', class_='VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb')
-            about_section = clean_text(about_section_span.text) if about_section_span else "About section not found"
+                title = result.find('h3')
+                name = clean_text(title.text) if title else ""
+                description = result.find('div', {'class': ['VwiC3b', 'yXK7lf']})
+                about_section = clean_text(description.text) if description else ""
 
-            profile_info = {
-                "name": user_name,
-                "linkedin_url": linkedin_url,
-                "about_section": about_section
-            }
-            profiles.append(profile_info)
+                if name and linkedin_url:
+                    profiles.append(ProfileResponse(name=name, linkedin_url=linkedin_url, about_section=about_section))
 
-            if len(profiles) >= 10:
-                break
-        except Exception as e:
-            print(f"Error parsing profile: {e}")
-            continue
+                if len(profiles) >= 10:
+                    break
+
+            except Exception as e:
+                logger.warning(f"Error parsing individual result: {str(e)}")
+                continue
+
+    except Exception as e:
+        logger.error(f"Error parsing search results: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to parse search results")
 
     return profiles
 
-
-@app.post("/scrape_linkedin_profiles")
+@app.post("/scrape_linkedin_profiles", response_model=List[ProfileResponse])
 async def scrape_linkedin_profiles(request: NameRequest):
+    """Endpoint to scrape LinkedIn profiles based on name search."""
     try:
+        if not request.name.strip():
+            raise HTTPException(status_code=400, detail="Name cannot be empty")
+
+        logger.info(f"Scraping LinkedIn profiles for name: {request.name}")
         search_results_html = get_google_search_results(request.name)
         profiles = parse_search_results(search_results_html)
 
-        if not profiles:
-            return {"message": "No profiles found"}
-
+        logger.info(f"Found {len(profiles)} profiles for name: {request.name}")
         return profiles
 
+    except HTTPException as http_ex:
+        logger.error(f"HTTP error occurred: {http_ex.detail}")
+        raise
     except Exception as e:
-        return {"error": str(e)}
-
+        logger.error(f"Unexpected error while scraping profiles: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8003)

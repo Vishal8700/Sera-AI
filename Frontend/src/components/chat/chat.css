@@ -121,6 +121,31 @@ body {
   cursor: pointer;
 }
 
+
+.chat-app-home-button{
+  display: block;
+  width: 80px;
+  border:none;
+  border-radius: 5px;
+  text-align: left;
+  padding: 10px 16px;
+  position: absolute;
+  bottom: 10px; /* Position it 10px from the bottom */
+  left: 200px; /* Center it horizontally */
+  transform: translateX(-50%); /* Adjust for centering */
+}
+
+.chat-app-home-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.chat-app-home-button:hover {
+  background-color: #45a049;
+}
+
+
+
 /* Recent Chats */
 .chat-app-recent-chats {
   margin-top: 20px;

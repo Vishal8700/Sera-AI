@@ -10,6 +10,7 @@ import LinkedInCallback from '../userinfo/userinfo';
 import axios from 'axios'; // Make sure to install axios: npm install axios
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { debounce } from 'lodash';
 
 
 const AdvancedSearchToggle = ({ isEnabled, onToggle }) => {
@@ -68,8 +69,18 @@ const SearchLinks = ({ sources }) => {
   );
 
 };
-
-const Sidebar = ({ recentChats, onChatClick, isLoggedIn, username, onLoginClick, onLogout, isAdvancedSearch, onToggleAdvancedSearch }) => {
+const Sidebar = ({
+  recentChats,
+  onChatClick,
+  isLoggedIn,
+  username,
+  onLoginClick,
+  onLogout,
+  isAdvancedSearch,
+  onToggleAdvancedSearch,
+  onHomeClick,
+  showChatHistory,
+}) => {
   return (
     <div className="chat-app-sidebar">
       {isLoggedIn ? (
@@ -83,14 +94,18 @@ const Sidebar = ({ recentChats, onChatClick, isLoggedIn, username, onLoginClick,
           Login / Sign Up
         </button>
       )}
-      
+
       <LinkedInAuthButton />
       <LinkedInCallback />
 
       <div className="chat-app-recent-chats">
         <h3>Recent Chats</h3>
         {recentChats.map((chat, index) => (
-          <div key={index} className="chat-app-chat-item" onClick={() => onChatClick(index)}>
+          <div
+            key={index}
+            className="chat-app-chat-item"
+            onClick={() => onChatClick(index)}
+          >
             <div className="chat-snippet">
               <strong>User:</strong> {chat.userMessage.slice(0, 30)}...
             </div>
@@ -99,7 +114,15 @@ const Sidebar = ({ recentChats, onChatClick, isLoggedIn, username, onLoginClick,
       </div>
 
       <div className="sidebar-bottom">
-        <AdvancedSearchToggle isEnabled={isAdvancedSearch} onToggle={onToggleAdvancedSearch} />
+        {showChatHistory && (
+          <button className="chat-app-home-button" onClick={onHomeClick}>
+            Home
+          </button>
+        )}
+        <AdvancedSearchToggle
+          isEnabled={isAdvancedSearch}
+          onToggle={onToggleAdvancedSearch}
+        />
         <button className="chat-app-logout-button" onClick={onLogout}>
           Logout
         </button>
@@ -107,6 +130,44 @@ const Sidebar = ({ recentChats, onChatClick, isLoggedIn, username, onLoginClick,
     </div>
   );
 };
+// const Sidebar = ({ recentChats, onChatClick, isLoggedIn, username, onLoginClick, onLogout, isAdvancedSearch, onToggleAdvancedSearch }) => {
+//   return (
+//     <div className="chat-app-sidebar">
+//       {isLoggedIn ? (
+//         <div>
+//           <button className="chat-app-profile-button">
+//             {username.charAt(0).toUpperCase()}
+//           </button>
+//         </div>
+//       ) : (
+//         <button className="chat-app-login-button" onClick={onLoginClick}>
+//           Login / Sign Up
+//         </button>
+//       )}
+      
+//       <LinkedInAuthButton />
+//       <LinkedInCallback />
+
+//       <div className="chat-app-recent-chats">
+//         <h3>Recent Chats</h3>
+//         {recentChats.map((chat, index) => (
+//           <div key={index} className="chat-app-chat-item" onClick={() => onChatClick(index)}>
+//             <div className="chat-snippet">
+//               <strong>User:</strong> {chat.userMessage.slice(0, 30)}...
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="sidebar-bottom">
+//         <AdvancedSearchToggle isEnabled={isAdvancedSearch} onToggle={onToggleAdvancedSearch} />
+//         <button className="chat-app-logout-button" onClick={onLogout}>
+//           Logout
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 const Header = () => {
   const navigate = useNavigate();
 
@@ -142,7 +203,7 @@ const App = () => {
   const [userProfile, setUserProfile] = useState(null);
   const chatContainerRef = useRef(null);
 
-  const genAI = new GoogleGenerativeAI('AIzaSyCawcXRC_tJ0_vxtMhrYM5A0s20Z_JRbxc');
+  const genAI = new GoogleGenerativeAI('AIzaSyAwHpsYthOXbu1XGzT-JJkIDZCcqvN7F78');
 
   // Load login state from localStorage
   useEffect(() => {
@@ -159,220 +220,8 @@ const App = () => {
     }
   }, [chatHistory]);
 
-  // const handleSendMessage = async (message) => {
-  //   console.log("Message sent:", message);
-    
-  //   if (message.toLowerCase() === '@linkedin-myinfo') {
-  //     const userInfoMessage = {
-  //       userMessage: '@linkedin-myinfo',
-  //       geminiResponse: formatUserInfo(userProfile),
-  //       isLinkedInInfo: true
-  //     };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, userInfoMessage]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, userInfoMessage]);
-  //   } 
-  //   else if (message.toLowerCase().startsWith('@linkedin-userinfo')) {
-  //     const name = message.split(' ').slice(1).join(' '); // Extract the name from the message
-  //     if (!name) {
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Please provide a name after @linkedin-userinfo",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //       return;
-  //     }
-  
-  //     const newChat = { userMessage: message, geminiResponse: "Fetching LinkedIn user info...", isLinkedInInfo: true };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, newChat]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, newChat]);
-  
-  //     try {
-  //       // Send POST request to the backend to fetch LinkedIn info
-  //       const response = await axios.post('http://localhost:8003/scrape_linkedin_profiles', { name });
-  
-  //       if (response.status === 200) {
-  //         const userInfo = response.data;
-  
-  //         const formattedResponse = formatLinkedInUserInfo(userInfo);
-  
-  //         setChatHistory(prevChatHistory => {
-  //           const updatedChats = [...prevChatHistory];
-  //           updatedChats[updatedChats.length - 1].geminiResponse = formattedResponse;
-  //           return updatedChats;
-  //         });
-  
-  //         setRecentChats(prevRecentChats => {
-  //           const updatedRecentChats = [...prevRecentChats];
-  //           updatedRecentChats[updatedRecentChats.length - 1].geminiResponse = formattedResponse;
-  //           return updatedRecentChats;
-  //         });
-  //       } else {
-  //         throw new Error("Failed to fetch LinkedIn user info");
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching LinkedIn user info:', error);
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Error fetching LinkedIn user info. Please try again later.",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //     }
-  //   }
-  //   else if (message.toLowerCase().startsWith('@linkedin-topic')) {
-  //     const topic = message.split(' ').slice(1).join(' ');
-  //     if (!topic) {
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Please provide a topic after @linkedin-topic",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //       return;
-  //     }
 
-  //     const newChat = { userMessage: message, geminiResponse: "Fetching topic-related posts...", isLinkedInInfo: true };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, newChat]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, newChat]);
-
-  //     try {
-  //       const response = await axios.post('http://localhost:8001/scrape_topic_posts', { topic });
-  //       const topicPosts = response.data;
-
-  //       const formattedResponse = formatTopicPosts(topicPosts);
-        
-  //       setChatHistory(prevChatHistory => {
-  //         const updatedChats = [...prevChatHistory];
-  //         updatedChats[updatedChats.length - 1].geminiResponse = formattedResponse;
-  //         return updatedChats;
-  //       });
-        
-  //       setRecentChats(prevRecentChats => {
-  //         const updatedRecentChats = [...prevRecentChats];
-  //         updatedRecentChats[updatedRecentChats.length - 1].geminiResponse = formattedResponse;
-  //         return updatedRecentChats;
-  //       });
-  //     } catch (error) {
-  //       console.error('Error fetching topic-related posts:', error);
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Error fetching topic-related posts. Please try again later.",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //     }
-  //   } 
-  //   else if (message.toLowerCase().startsWith('@linkedin-role')) {
-  //     const params = message.split(' ').slice(1);
-  //     if (params.length < 2) {
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Please provide both role and company name after @linkedin-role (e.g., @linkedin-role HR Google)",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //       return;
-  //     }
-
-  //     const role = params[0];
-  //     const companyName = params.slice(1).join(' ');
-
-  //     const newChat = { userMessage: message, geminiResponse: "Fetching role-specific profiles...", isLinkedInInfo: true };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, newChat]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, newChat]);
-
-  //     try {
-  //       const response = await axios.post('http://localhost:8002/scrape_role_profiles', { role, company_name: companyName });
-  //       const roleProfiles = response.data;
-
-  //       const formattedResponse = formatRoleProfiles(roleProfiles);
-        
-  //       setChatHistory(prevChatHistory => {
-  //         const updatedChats = [...prevChatHistory];
-  //         updatedChats[updatedChats.length - 1].geminiResponse = formattedResponse;
-  //         return updatedChats;
-  //       });
-        
-  //       setRecentChats(prevRecentChats => {
-  //         const updatedRecentChats = [...prevRecentChats];
-  //         updatedRecentChats[updatedRecentChats.length - 1].geminiResponse = formattedResponse;
-  //         return updatedRecentChats;
-  //       });
-  //     } catch (error) {
-  //       console.error('Error fetching role-specific profiles:', error);
-  //       const errorMessage = {
-  //         userMessage: message,
-  //         geminiResponse: "Error fetching role-specific profiles. Please try again later.",
-  //         isLinkedInInfo: true
-  //       };
-  //       setChatHistory(prevChatHistory => [...prevChatHistory, errorMessage]);
-  //       setRecentChats(prevRecentChats => [...prevRecentChats, errorMessage]);
-  //     }
-  //   }
-  //   if (isAdvancedSearch) {
-  //     const newChat = { userMessage: message, geminiResponse: "Searching...", sources: [] };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, newChat]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, newChat]);
-
-  //     try {
-  //       const response = await axios.post('http://localhost:8004/search', { query: message });
-  //       const { summary, sources } = response.data;
-
-  //       setChatHistory(prevChatHistory => {
-  //         const updatedChats = [...prevChatHistory];
-  //         updatedChats[updatedChats.length - 1].geminiResponse = summary;
-  //         updatedChats[updatedChats.length - 1].sources = sources;
-  //         return updatedChats;
-  //       });
-
-  //       setRecentChats(prevRecentChats => {
-  //         const updatedRecentChats = [...prevRecentChats];
-  //         updatedRecentChats[updatedRecentChats.length - 1].geminiResponse = summary;
-  //         updatedRecentChats[updatedRecentChats.length - 1].sources = sources;
-  //         return updatedRecentChats;
-  //       });
-
-  //       setSearchSources(sources);
-  //     } catch (error) {
-  //       console.error('Error performing advanced search:', error);
-  //       // Handle error...
-  //     }
-  //   } 
-  //   else {
-  //     // Handle non-LinkedIn chat messages
-  //     const newChat = { userMessage: message, geminiResponse: null };
-  //     setChatHistory(prevChatHistory => [...prevChatHistory, newChat]);
-  //     setRecentChats(prevRecentChats => [...prevRecentChats, newChat]);
-  
-  //     try {
-  //       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  //       const result = await model.generateContent(message);
-  
-  //       const geminiResponse = await result.response.text();
-  
-  //       setChatHistory(prevChatHistory => {
-  //         const updatedChats = [...prevChatHistory];
-  //         updatedChats[updatedChats.length - 1].geminiResponse = geminiResponse;
-  //         return updatedChats;
-  //       });
-  
-  //       setRecentChats(prevRecentChats => {
-  //         const updatedRecentChats = [...prevRecentChats];
-  //         updatedRecentChats[updatedRecentChats.length - 1].geminiResponse = geminiResponse;
-  //         return updatedRecentChats;
-  //       });
-  //     } catch (error) {
-  //       console.error('Error generating response:', error);
-  //     }
-  //   }
-  // };
-  const handleSendMessage = async (message) => {
+  const handleSendMessage = debounce(async (message) => {
     console.log("Message sent:", message);
     
     // Check for special LinkedIn commands first
@@ -588,7 +437,7 @@ const App = () => {
     } catch (error) {
         console.error('Error generating response:', error);
     }
-};
+},500);
 
   const formatTopicPosts = (posts) => {
     return posts.map((post, index) => `
@@ -635,10 +484,9 @@ const App = () => {
   };
 
 
-  const handleChatClick = (index) => {
-    setCurrentChatIndex(index);
-    console.log('Chat clicked:', index);
-  };
+  // const handleChatClick = (index) => {
+  //   setCurrentChatIndex(index);
+  // };
 
   const handleLogin = (username) => {
     setIsLoggedIn(true);
@@ -660,6 +508,24 @@ const App = () => {
   const handleCloseAuth = () => {
     setShowAuth(false);
   };
+
+  const [showChatHistory, setShowChatHistory] = useState(false);
+
+const handleChatClick = (index) => {
+  setShowChatHistory(true);
+  setCurrentChatIndex(index);
+};
+
+const handleBackButton = () => {
+  setShowChatHistory(false);
+  setCurrentChatIndex(null);
+};
+
+const handleHomeClick = () => {
+  setShowChatHistory(false);
+  setCurrentChatIndex(null);
+};
+
 
   const formatMessage = (message, isLinkedInInfo = false) => {
     if (isLinkedInInfo) {
@@ -749,16 +615,18 @@ const App = () => {
 
   return (
     <div className="chat-app">
-      <Sidebar
-        recentChats={recentChats}
-        onChatClick={handleChatClick}
-        isLoggedIn={isLoggedIn}
-        username={username}
-        onLoginClick={handleLoginClick}
-        onLogout={handleLogout}
-        isAdvancedSearch={isAdvancedSearch}
-        onToggleAdvancedSearch={toggleAdvancedSearch}
-      />
+    <Sidebar
+      recentChats={recentChats}
+      onChatClick={handleChatClick}
+      isLoggedIn={isLoggedIn}
+      username={username}
+      onLoginClick={handleLoginClick}
+      onLogout={handleLogout}
+      isAdvancedSearch={isAdvancedSearch}
+      onToggleAdvancedSearch={toggleAdvancedSearch}
+      onHomeClick={handleHomeClick}
+      showChatHistory={showChatHistory}
+    />
       <div className="chat-app-main-content">
         <Header />
 
