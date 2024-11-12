@@ -243,12 +243,3 @@ After logging in and connecting your LinkedIn account, users can create and publ
 ### Step 5: Confirmation
 - Upon successful submission, you will receive a confirmation message that the article has been published on LinkedIn.
 
-
-## 👨‍💻 Team
-
-- Vishal Kumar [Github Profile](https://github.com/Vishal8700)
-- Keshav Anand Verma [Github Profile](https://github.com/codes-by-keshav)
-- Devanshu Raj [Github Profile](https://github.com/Redd-hope)
-- Simran [Github Profile](https://github.com/simran1devloper)
-
----
