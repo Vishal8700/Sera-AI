@@ -1,4 +1,4 @@
-# ✨Sera AI - Etherverse Variants
+# ✨Sera AI 
 
 ## 🔎 Overview 
 
@@ -8,11 +8,6 @@
 ## 📽️Video (Youtube)
 [![YouTube Video](https://img.youtube.com/vi/c2p3oX5EKNw/maxresdefault.jpg)](https://youtu.be/c2p3oX5EKNw)
 
----
-## 📊 Presentation  
-[Sera AI.pdf]👨‍💻([https://github.com/user-attachments/files/17175485/Sera.AI.pdf](https://github.com/Vishal8700/Sera-AI/blob/master/Sera%20AI.pdf))
-
----
 ## 💡 Key Features 
 
 1. **Natural Conversations** 💬🧠:  
