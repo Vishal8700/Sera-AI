@@ -2,7 +2,7 @@
 
 ## 🔎 Overview 
 
-**Sera AI** is an intelligent, React-based chatbot application created by **Team Etherverse Variants**. Sera AI integrates Google Authentication for secure access and leverages cutting-edge APIs to facilitate dynamic conversations, information retrieval, and task automation, all within a seamless and user-friendly interface.
+**Sera AI** is an intelligent, React-based chatbot application created by us. Sera AI integrates Google Authentication for secure access and leverages cutting-edge APIs to facilitate dynamic conversations, information retrieval, and task automation, all within a seamless and user-friendly interface.
 
 ---
 ## 📽️Video (Youtube)
