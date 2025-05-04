@@ -1,6 +1,3 @@
-Sure! Here's a **formal and professional `README.md`** for your GitHub repository `Sera-AI`, formatted in a clean, GitHub-friendly markdown style:
-
----
 
 ````markdown
 # Sera AI
