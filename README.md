@@ -1,8 +1,4 @@
-You’ve asked to fix the provided `README.md` for your Sera-AI repository. Here’s a revised, professional, and clean version, with improved formatting, consistency, and clarity. I’ve also corrected minor markdown issues and enhanced the structure for better readability.
 
----
-
-```markdown
 # Sera AI
 
 Sera AI is a React-based intelligent chatbot platform that integrates LinkedIn authentication for secure user access. It enables dynamic, AI-powered conversations, automates content creation, and streamlines professional interactions directly through an intuitive user interface.
@@ -118,7 +114,3 @@ For queries or collaboration:
 📧 [git.alien@proton.me](mailto:git.alien@proton.me)  
 🔗 [LinkedIn](https://linkedin.com/in/vishal8700)
 ```
-
----
-
-Would you like to add badges (e.g., build status, stars), deployment instructions for Vercel/Netlify, or a sample LICENSE file? Let me know if you need further customization!
